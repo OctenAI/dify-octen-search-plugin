@@ -1,0 +1,13 @@
+[project]
+name = "octen"
+version = "0.0.1"
+description = "Real-time web search for AI agents powered by Octen"
+readme = "README.md"
+requires-python = ">=3.12"
+
+dependencies = [
+    "dify_plugin>=0.5.0",
+]
+
+[dependency-groups]
+dev = []

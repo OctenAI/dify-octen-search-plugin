@@ -1,0 +1,125 @@
+identity:
+  name: octen_search
+  author: octen
+  label:
+    en_US: Octen Web Search
+    zh_Hans: Octen 网络搜索
+description:
+  human:
+    en_US: Real-time web search powered by Octen. Search the web with ultra-low latency
+      and get structured, LLM-ready results including titles, URLs, and content snippets.
+    zh_Hans: 由 Octen 驱动的实时网络搜索。以超低延迟搜索网络，获取结构化的 LLM 就绪结果，包括标题、URL 和内容摘要。
+  llm: A real-time web search tool that returns up-to-date search results from the
+    web. Use this to find current information, news, articles, and web content.
+    Returns titles, URLs, and content snippets with ultra-low latency.
+parameters:
+  - name: query
+    type: string
+    required: true
+    label:
+      en_US: Query
+      zh_Hans: 搜索查询
+    human_description:
+      en_US: The search query to execute
+      zh_Hans: 要执行的搜索查询
+    llm_description: The search query string. Maximum 500 characters.
+    form: llm
+  - name: count
+    type: number
+    required: false
+    default: 5
+    min: 1
+    max: 100
+    label:
+      en_US: Result Count
+      zh_Hans: 结果数量
+    human_description:
+      en_US: Number of search results to return (1-100, default 5)
+      zh_Hans: 返回的搜索结果数量（1-100，默认 5）
+    llm_description: Number of search results to return. Range is 1-100, default is 5.
+    form: form
+  - name: include_domains
+    type: string
+    required: false
+    label:
+      en_US: Include Domains
+      zh_Hans: 包含域名
+    human_description:
+      en_US: Comma-separated list of domains to include in results
+      zh_Hans: 逗号分隔的域名列表，仅包含这些域名的结果
+    llm_description: Comma-separated list of domains to specifically include in search results.
+    form: llm
+  - name: exclude_domains
+    type: string
+    required: false
+    label:
+      en_US: Exclude Domains
+      zh_Hans: 排除域名
+    human_description:
+      en_US: Comma-separated list of domains to exclude from results
+      zh_Hans: 逗号分隔的域名列表，排除这些域名的结果
+    llm_description: Comma-separated list of domains to exclude from search results.
+    form: llm
+  - name: start_time
+    type: string
+    required: false
+    label:
+      en_US: Start Time
+      zh_Hans: 开始时间
+    human_description:
+      en_US: Filter results published after this time (ISO 8601 format)
+      zh_Hans: 过滤此时间之后发布的结果（ISO 8601 格式）
+    llm_description: ISO 8601 timestamp to filter results published after this time.
+    form: llm
+  - name: end_time
+    type: string
+    required: false
+    label:
+      en_US: End Time
+      zh_Hans: 结束时间
+    human_description:
+      en_US: Filter results published before this time (ISO 8601 format)
+      zh_Hans: 过滤此时间之前发布的结果（ISO 8601 格式）
+    llm_description: ISO 8601 timestamp to filter results published before this time.
+    form: llm
+  - name: format
+    type: select
+    required: false
+    default: markdown
+    label:
+      en_US: Content Format
+      zh_Hans: 内容格式
+    human_description:
+      en_US: Format of the returned content (markdown or text)
+      zh_Hans: 返回内容的格式（markdown 或 text）
+    llm_description: Format of the returned content.
+    options:
+      - label:
+          en_US: Markdown
+        value: markdown
+      - label:
+          en_US: Text
+        value: text
+    form: form
+  - name: safesearch
+    type: select
+    required: false
+    default: strict
+    label:
+      en_US: Safe Search
+      zh_Hans: 安全搜索
+    human_description:
+      en_US: Safe search mode (strict or off)
+      zh_Hans: 安全搜索模式（严格或关闭）
+    llm_description: Safe search filter mode.
+    options:
+      - label:
+          en_US: Strict
+        value: strict
+      - label:
+          en_US: "Off"
+        value: "off"
+    form: form
+extra:
+  python:
+    source: tools/octen_search.py

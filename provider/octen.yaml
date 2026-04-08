@@ -1,0 +1,32 @@
+identity:
+  author: octen
+  name: octen
+  label:
+    en_US: Octen Search
+    zh_Hans: Octen Search
+  description:
+    en_US: Real-time web search for AI agents powered by Octen. Delivers LLM-native
+      search results with industry-leading latency (62ms P50).
+    zh_Hans: 由 Octen 驱动的 AI 实时网络搜索，以业界领先的延迟（P50 62ms）提供 LLM 原生搜索结果。
+  icon: icon.svg
+  tags:
+    - search
+credentials_for_provider:
+  octen_api_key:
+    type: secret-input
+    required: true
+    label:
+      en_US: Octen API Key
+      zh_Hans: Octen API Key
+    placeholder:
+      en_US: Please input your Octen API key
+      zh_Hans: 请输入您的 Octen API Key
+    help:
+      en_US: Get your Octen API key from the Octen platform
+      zh_Hans: 从 Octen 平台获取您的 API Key
+    url: https://octen.ai/platform
+tools:
+  - tools/octen_search.yaml
+extra:
+  python:
+    source: provider/octen.py
