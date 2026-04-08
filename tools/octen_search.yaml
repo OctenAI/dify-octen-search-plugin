@@ -189,7 +189,7 @@ parameters:
   - name: format
     type: select
     required: false
-    default: markdown
+    default: text
     label:
       en_US: Content Format
       zh_Hans: 内容格式
