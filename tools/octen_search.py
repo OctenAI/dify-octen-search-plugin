@@ -30,9 +30,11 @@ class OctenSearchTool(Tool):
 
         payload: dict[str, Any] = {"query": query}
 
+        # count
         if count := tool_parameters.get("count"):
             payload["count"] = int(count)
 
+        # domain filters
         if include_domains := tool_parameters.get("include_domains"):
             payload["include_domains"] = [
                 d.strip() for d in include_domains.split(",") if d.strip()
@@ -43,19 +45,50 @@ class OctenSearchTool(Tool):
                 d.strip() for d in exclude_domains.split(",") if d.strip()
             ]
 
+        # text filters
+        if include_text := tool_parameters.get("include_text"):
+            payload["include_text"] = [
+                t.strip() for t in include_text.split(",") if t.strip()
+            ]
+
+        if exclude_text := tool_parameters.get("exclude_text"):
+            payload["exclude_text"] = [
+                t.strip() for t in exclude_text.split(",") if t.strip()
+            ]
+
+        # time filters
+        if time_basis := tool_parameters.get("time_basis"):
+            payload["time_basis"] = time_basis
+
         if start_time := tool_parameters.get("start_time"):
             payload["start_time"] = start_time
 
         if end_time := tool_parameters.get("end_time"):
             payload["end_time"] = end_time
 
+        # highlight
+        highlight_enabled = tool_parameters.get("highlight_enabled", True)
+        highlight_max_tokens = tool_parameters.get("highlight_max_tokens", 512)
+        payload["highlight"] = {
+            "enable": highlight_enabled,
+            "max_tokens": int(highlight_max_tokens),
+        }
+
+        # full content
+        full_content_enabled = tool_parameters.get("full_content_enabled", False)
+        if full_content_enabled:
+            full_content_max_tokens = tool_parameters.get("full_content_max_tokens", 2048)
+            payload["full_content"] = {
+                "enable": True,
+                "max_tokens": int(full_content_max_tokens),
+            }
+
+        # format & safesearch
         if fmt := tool_parameters.get("format"):
             payload["format"] = fmt
 
         if safesearch := tool_parameters.get("safesearch"):
             payload["safesearch"] = safesearch
-
-        payload["highlight"] = {"enable": True, "max_tokens": 300}
 
         try:
             response = requests.post(
@@ -91,13 +124,19 @@ class OctenSearchTool(Tool):
             title = result.get("title", "No Title")
             url = result.get("url", "")
             highlight = result.get("highlight", "")
+            full_content = result.get("full_content", "")
+            authors = result.get("authors", "")
             published = result.get("time_published", "")
 
             text_lines.append(f"## {idx}. [{title}]({url})")
+            if authors:
+                text_lines.append(f"**Source:** {authors}")
             if published:
                 text_lines.append(f"**Published:** {published}")
             if highlight:
                 text_lines.append(f"{highlight}")
+            if full_content:
+                text_lines.append(f"\n**Full Content:**\n{full_content}")
             text_lines.append("")
 
         yield self.create_text_message("\n".join(text_lines))

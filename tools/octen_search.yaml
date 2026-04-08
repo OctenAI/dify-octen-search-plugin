@@ -20,8 +20,8 @@ parameters:
       en_US: Query
       zh_Hans: 搜索查询
     human_description:
-      en_US: The search query to execute
-      zh_Hans: 要执行的搜索查询
+      en_US: The search query to execute (max 500 characters)
+      zh_Hans: 要执行的搜索查询（最多 500 个字符）
     llm_description: The search query string. Maximum 500 characters.
     form: llm
   - name: count
@@ -45,9 +45,10 @@ parameters:
       en_US: Include Domains
       zh_Hans: 包含域名
     human_description:
-      en_US: Comma-separated list of domains to include in results
-      zh_Hans: 逗号分隔的域名列表，仅包含这些域名的结果
+      en_US: Comma-separated list of domains to include in results (max 1000 items, 30 chars each)
+      zh_Hans: 逗号分隔的域名列表，仅包含这些域名的结果（最多 1000 项，每项 30 字符）
     llm_description: Comma-separated list of domains to specifically include in search results.
+      Max 1000 domains, each up to 30 characters.
     form: llm
   - name: exclude_domains
     type: string
@@ -56,10 +57,57 @@ parameters:
       en_US: Exclude Domains
       zh_Hans: 排除域名
     human_description:
-      en_US: Comma-separated list of domains to exclude from results
-      zh_Hans: 逗号分隔的域名列表，排除这些域名的结果
+      en_US: Comma-separated list of domains to exclude from results (max 150 items, 30 chars each)
+      zh_Hans: 逗号分隔的域名列表，排除这些域名的结果（最多 150 项，每项 30 字符）
     llm_description: Comma-separated list of domains to exclude from search results.
+      Max 150 domains, each up to 30 characters.
     form: llm
+  - name: include_text
+    type: string
+    required: false
+    label:
+      en_US: Include Text
+      zh_Hans: 包含文本
+    human_description:
+      en_US: Comma-separated strings that must appear in result page text (max 5 items, 30 chars each)
+      zh_Hans: 逗号分隔的字符串，结果页面必须包含这些文本（最多 5 项，每项 30 字符）
+    llm_description: Comma-separated strings that must appear in the result page text.
+      Max 5 items, each up to 30 characters.
+    form: llm
+  - name: exclude_text
+    type: string
+    required: false
+    label:
+      en_US: Exclude Text
+      zh_Hans: 排除文本
+    human_description:
+      en_US: Comma-separated strings that must not appear in result page text (max 5 items, 30 chars each)
+      zh_Hans: 逗号分隔的字符串，结果页面不能包含这些文本（最多 5 项，每项 30 字符）
+    llm_description: Comma-separated strings that must not appear in the result page text.
+      Max 5 items, each up to 30 characters.
+    form: llm
+  - name: time_basis
+    type: select
+    required: false
+    default: auto
+    label:
+      en_US: Time Basis
+      zh_Hans: 时间基准
+    human_description:
+      en_US: Determines which time field is used for time filtering
+      zh_Hans: 决定使用哪个时间字段进行时间过滤
+    llm_description: Determines which time field is used for start_time and end_time filtering.
+    options:
+      - label:
+          en_US: Auto
+        value: auto
+      - label:
+          en_US: Published
+        value: published
+      - label:
+          en_US: Crawled
+        value: crawled
+    form: form
   - name: start_time
     type: string
     required: false
@@ -67,9 +115,10 @@ parameters:
       en_US: Start Time
       zh_Hans: 开始时间
     human_description:
-      en_US: Filter results published after this time (ISO 8601 format)
-      zh_Hans: 过滤此时间之后发布的结果（ISO 8601 格式）
-    llm_description: ISO 8601 timestamp to filter results published after this time.
+      en_US: Filter results after this time based on time_basis (ISO 8601 format)
+      zh_Hans: 根据时间基准过滤此时间之后的结果（ISO 8601 格式）
+    llm_description: ISO 8601 timestamp to filter results after this time, based on the
+      time_basis setting.
     form: llm
   - name: end_time
     type: string
@@ -78,10 +127,65 @@ parameters:
       en_US: End Time
       zh_Hans: 结束时间
     human_description:
-      en_US: Filter results published before this time (ISO 8601 format)
-      zh_Hans: 过滤此时间之前发布的结果（ISO 8601 格式）
-    llm_description: ISO 8601 timestamp to filter results published before this time.
+      en_US: Filter results before this time based on time_basis (ISO 8601 format)
+      zh_Hans: 根据时间基准过滤此时间之前的结果（ISO 8601 格式）
+    llm_description: ISO 8601 timestamp to filter results before this time, based on the
+      time_basis setting.
     form: llm
+  - name: highlight_enabled
+    type: boolean
+    required: false
+    default: true
+    label:
+      en_US: Enable Highlight
+      zh_Hans: 启用摘要高亮
+    human_description:
+      en_US: If true, returns query-relevant highlight snippets in each result
+      zh_Hans: 如果启用，每个结果将返回与查询相关的摘要高亮
+    llm_description: If true, returns query-relevant highlight in each result.
+    form: form
+  - name: highlight_max_tokens
+    type: number
+    required: false
+    default: 512
+    min: 100
+    max: 20000
+    label:
+      en_US: Highlight Max Tokens
+      zh_Hans: 摘要最大 Token 数
+    human_description:
+      en_US: Maximum tokens per highlight snippet (100-20000, default 512)
+      zh_Hans: 每个摘要高亮的最大 Token 数（100-20000，默认 512）
+    llm_description: Maximum number of tokens per highlight snippet. Range is 100-20000,
+      default is 512.
+    form: form
+  - name: full_content_enabled
+    type: boolean
+    required: false
+    default: false
+    label:
+      en_US: Enable Full Content
+      zh_Hans: 启用完整内容
+    human_description:
+      en_US: If true, returns full page content for each result
+      zh_Hans: 如果启用，每个结果将返回完整的页面内容
+    llm_description: If true, returns the full page content for each search result.
+    form: form
+  - name: full_content_max_tokens
+    type: number
+    required: false
+    default: 2048
+    min: 100
+    max: 100000
+    label:
+      en_US: Full Content Max Tokens
+      zh_Hans: 完整内容最大 Token 数
+    human_description:
+      en_US: Maximum tokens of full content per result (100-100000, default 2048)
+      zh_Hans: 每个结果完整内容的最大 Token 数（100-100000，默认 2048）
+    llm_description: Maximum number of tokens for full page content per result. Range is
+      100-100000, default is 2048.
+    form: form
   - name: format
     type: select
     required: false
@@ -90,9 +194,9 @@ parameters:
       en_US: Content Format
       zh_Hans: 内容格式
     human_description:
-      en_US: Format of the returned content (markdown or text)
-      zh_Hans: 返回内容的格式（markdown 或 text）
-    llm_description: Format of the returned content.
+      en_US: Format of the returned highlight content (markdown or text)
+      zh_Hans: 返回摘要内容的格式（markdown 或 text）
+    llm_description: Controls the output format of highlight content.
     options:
       - label:
           en_US: Markdown
@@ -109,9 +213,9 @@ parameters:
       en_US: Safe Search
       zh_Hans: 安全搜索
     human_description:
-      en_US: Safe search mode (strict or off)
-      zh_Hans: 安全搜索模式（严格或关闭）
-    llm_description: Safe search filter mode.
+      en_US: Controls filtering of explicit/adult content (strict or off)
+      zh_Hans: 控制显式/成人内容过滤（严格或关闭）
+    llm_description: Controls filtering of explicit/adult content in search results.
     options:
       - label:
           en_US: Strict
